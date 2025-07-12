@@ -1,4 +1,18 @@
 
+
+
+# Copyright (c) 2025 ethereald
+# Author: ethereald
+#
+# MIT License
+#
+# This script provides utilities to backup and restore Lora model files for ComfyUI by encoding them into JSON archives.
+#
+# Functions:
+#   - zip_folder: Encode files in a folder into JSON archives, optionally to a different output directory.
+#   - unzip_folder: Restore files from JSON archives in a folder.
+#   - main: Command-line interface for zip/unzip operations.
+
 import os
 import sys
 import shutil
@@ -8,6 +22,16 @@ from pathlib import Path
 MAX_ZIP_SIZE = 1 * 1024 * 1024  # 1MB
 
 def zip_folder(folder_path):
+    """
+    Encode all files in the specified folder into JSON archives, splitting large files into chunks.
+    Optionally, output the archives to a different directory.
+
+    Args:
+        folder_path (str or list): Path to the folder to encode, or [source_folder, output_dir].
+
+    Returns:
+        None. Prints status and creates JSON files.
+    """
     import base64, json
     output_dir = None
     if isinstance(folder_path, (list, tuple)):
@@ -89,6 +113,16 @@ def zip_folder(folder_path):
         print(f"Encoded into {len(json_files)} JSON files in {output_dir} (source files not deleted).")
 
 def unzip_folder(folder_path):
+    """
+    Restore files from JSON archives in the specified folder.
+    Reassembles large files from chunks and deletes JSON archives after extraction.
+
+    Args:
+        folder_path (str): Path to the folder containing JSON archives.
+
+    Returns:
+        None. Prints status and restores files.
+    """
     import base64, json
     folder = Path(folder_path)
     json_files = list(folder.glob('*.json'))
@@ -124,6 +158,15 @@ def unzip_folder(folder_path):
     print(f"Restored {len(restored_files)} files and removed JSON files.")
 
 def main():
+    """
+    Command-line interface for zipper.py.
+    Usage:
+        python zipper.py <zip|unzip> <folder_path> [output_dir_for_zip]
+
+    Operations:
+        zip: Encode files in folder_path into JSON archives. Optionally specify output_dir_for_zip.
+        unzip: Restore files from JSON archives in folder_path.
+    """
     if len(sys.argv) < 3:
         print("Usage: python zipper.py <zip|unzip> <folder_path> [output_dir_for_zip]")
         return
